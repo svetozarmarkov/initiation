@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+.button {
+  background-color: red;
+  border: 1px solid black;
+  color: white;
+  padding: 1px 1px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1px;
+  margin: 2px 2px;
+  cursor: pointer;
+  width: 150px;
+  height: 150px;
+  float: left;
+  border-radius: 25%;
+}
+
+.button0 {
+  background-color: SlateBlue;
+}
+
+.button1 {
+  background-color: MediumSeaGreen;
+}
+
+.button2 {
+  background-color: Violet;
+}
+
+.button3 {
+  background-color: pink;
+}
+
+.button4 {
+  background-color: tomato;
+}
+
+.button5 {
+  background-color: orange;
+}
+
+.btntitle {
+  float: left;
+  width: 250px;
+  font-size: 24px;
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 2px 2px;
+}
+
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+.clue {
+  background: gray;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  display: inline-block;
+  font-size: 32px;
+  font-family: monospace;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+<audio id="plus">
+  <source src="ringout.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+<audio id="minus">
+  <source src="tada.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+<div style="clear:left;">
+<button id="btn0" class="button button0" onclick="btnclick('0');">.</button><p id="lbl0" class="btntitle">Play Games</p>
+</div>
+
+<div style="float:left;">
+<button id="btn1" class="button button1" onclick="btnclick('1');">.</button><p id="lbl1" class="btntitle">Have a snack</p>
+</div>
+
+<div style="clear:left;">
+<button id="btn2" class="button button2" onclick="btnclick('2');">.</button><p id="lbl2" class="btntitle">Go for a walk</p>
+</div>
+
+<div style="float:left;">
+<button id="btn3" class="button button3" onclick="btnclick('3');">.</button><p id="lbl3" class="btntitle">Exercise</p>
+</div>
+
+<div style="clear:left;">
+<button id="btn4" class="button button4" onclick="btnclick('4');">.</button><p id="lbl4" class="btntitle">Wash the dishes</p>
+</div>
+
+<div style="float:left;">
+<button id="btn5" class="button button5" onclick="btnclick('5');">.</button><p id="lbl5" class="btntitle">Vacuum</p>
+</div>
+
+<div class="slidecontainer">
+  <input type="range" min="0" max="100" value="100" class="slider" id="myRange" onchange="refactor();">
+</div>
+<div class="clue">
+<p id="czp">
+100%
+</p>
+</div>
+<div id="reportbox" style="height:250px;width:100%;border:1px solid #ccc;font:14px/20px Arial, Helvetica, sans-serif;overflow:scroll;">
+</div>
+<button onclick="resetControls()" type="button">Clear Report</button>
+
+<script>
+// 0 - grow/shrink ratio
+// 1 default height
+// 2 default width
+// 3 has been clicked flag
+var sizes = [[1.49, 150, 150, 0], [1.2, 150, 150, 0], [0.3, 150, 150, 0], [-0.3, 150, 150, 0], [-1.2, 150, 150, 0], [-1.49, 150, 150, 0]];
+var totalclicks = 0;
+function refactor() {
+  report();
+};
+function btnclick(id) {
+  totalclicks++;
+  var lid = "lbl" + id;
+  var xplus = document.getElementById("plus");
+  xplus.pause();
+  sizes[id][3] = 1; // mark as clicked
+  report();
+  xplus.play(); 
+};
+function clearreport() {
+  document.getElementById("reportbox").innerHTML = "";
+};
+function report() {
+  var szv = document.getElementById("myRange").value; 
+  document.getElementById("czp").innerHTML = szv + "%";
+  var diff = 100 - szv;
+  var reporthtml = "";
+  var alldone = 1;
+  for(var index = 0; index < 6; index++) {
+    // Get the task text
+    var lid = "lbl" + index;
+    var txt = document.getElementById(lid).innerHTML;
+    var decoration = "";
+    if(sizes[index][3]) {
+      decoration = "style=\"text-decoration: line-through;\"";
+    } else {
+      alldone = 0;
+    };
+    reporthtml += "<p " + decoration + ">" + (index + 1) + ". " + txt + "</p>";
+    // Resize buttons
+    var factor = sizes[index][0];
+    var update = diff * factor;
+    var bid = "btn" + index;
+    document.getElementById(bid).style.height = (sizes[index][1] + update) + "px";
+    document.getElementById(bid).style.width = (sizes[index][2] + update) + "px";
+  }
+  if (alldone) {
+    document.getElementById("reportbox").innerHTML = "<p style=\"text-align: center; color:green; font-size: 120px;font-weight: 900;font-family:Georgia, Palatino, Garamond, 'Times New Roman', Times, serif;\">WELL DONE</p>"
+  }
+  else if(totalclicks >= 6) {
+    document.getElementById("reportbox").innerHTML = "<p style=\"text-align: center; color:red; font-size: 120px;font-weight: 900;font-family:Georgia, Palatino, Garamond, 'Times New Roman', Times, serif;\">GAME OVER</p>"
+  }
+  else {
+    document.getElementById("reportbox").innerHTML = reporthtml;
+  };
+};
+function resetControls() {
+  totalclicks = 0;
+  for(var index = 0; index < 6; index++) {
+    sizes[index][3] = 0; // has been clicked is false
+  }
+  report();
+};
+
+resetControls();
+</script>
+</body>
+</html>
